@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  xray-daemon:
+    image: amazon/aws-xray-daemon:3.x
+    ports:
+      - "2000:2000/udp"
+    command: 
+      - "-o" # Don't check for EC2 instance metadata.
+    volumes:
+      - ~/.aws:/home/xray/.aws:ro
+    environment:
+      AWS_REGION: ap-northeast-1
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ~/.aws:/root/.aws:ro
+    depends_on:
+      - xray-daemon
+    environment:
+      AWS_REGION: ap-northeast-1
